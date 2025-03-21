@@ -15,12 +15,6 @@ public abstract class Catalogo {
         this.numeroPagine = numeroPagine;
     }
 
-    public Catalogo() {
-    }
-
-    // Gettere e setter
-
-
     public String getCodiceISBN() {
         return codiceISBN;
     }
