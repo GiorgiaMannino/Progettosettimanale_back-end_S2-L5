@@ -38,13 +38,18 @@ public class Archivio {
             logger.error("Errore! L'elemento da aggiungere non può essere null.");
             return;
         }
-        if (collezione.stream().anyMatch(e -> e.getCodiceISBN().equals(elemento.getCodiceISBN()))) {
+
+        boolean isIsbnPresente = collezione.stream()
+                .anyMatch(e -> e.getCodiceISBN().equals(elemento.getCodiceISBN()));
+
+        if (isIsbnPresente) {
             logger.error("Errore! ISBN già presente");
         } else {
             collezione.add(elemento);
             logger.info("Elemento {} aggiunto correttamente", elemento);
         }
     }
+
 
     public Catalogo ricercaperISBN(String codiceISBN) throws ElementoNonTrovatoException {
         if (codiceISBN == null || codiceISBN.isEmpty()) {
@@ -75,25 +80,23 @@ public class Archivio {
             return;
         }
 
-        boolean trovato = false;
+        boolean[] trovato = { false };
 
-        for (Catalogo elemento : collezione) {
-            if (elemento.getAnnoPubblicazione() == annoPubblicazione) {
-                if (elemento instanceof Libro libro) {
-                    logger.info("Libro trovato: {}", libro);
-                } else if (elemento instanceof Rivista rivista) {
-                    logger.info("Rivista trovata: {}", rivista);
-                }
-                trovato = true;
-            }
-        }
+        collezione.stream()
+                .filter(elemento -> elemento.getAnnoPubblicazione() == annoPubblicazione)
+                .forEach(elemento -> {
+                    if (elemento instanceof Libro libro) {
+                        logger.info("Libro trovato: {}", libro);
+                    } else if (elemento instanceof Rivista rivista) {
+                        logger.info("Rivista trovata: {}", rivista);
+                    }
+                    trovato[0] = true;
+                });
 
-        if (!trovato) {
+        if (!trovato[0]) {
             logger.warn("Nessun elemento trovato per l'anno {}", annoPubblicazione);
         }
     }
-
-
 
     public void ricercaAutore(String autore) {
         if (autore == null || autore.trim().isEmpty()) {
